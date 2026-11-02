@@ -13,8 +13,8 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 sqlalchemy = {extras = ["asyncio"], version = "*"}
 asyncpg = "*"
-pydantic = {extras = ["email-validator"], version = "*"}
 pydantic-settings = "*"
+pydantic = {extras = ["email"], version = "*"}
 
 [dev-packages]
 
