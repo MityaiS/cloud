@@ -9,7 +9,7 @@ from app.database.engine import engine, Base
 @asynccontextmanager
 async def lifespan(app:FastAPI): 
     logger.info("Starting Cloud Storage API...")
-    # await MinIOService().ensure_bucket() 
+    await MinIOService().ensure_bucket() 
     async with engine.begin() as conn: 
         await conn.run_sync(Base.metadata.create_all)
     logger.info("MinIO bucket ensured")

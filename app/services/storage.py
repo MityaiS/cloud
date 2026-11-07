@@ -20,13 +20,16 @@ class MinIOService:
             use_ssl=False,
         )
 
-    async def ensure_bucket(self)->None:
+    async def ensure_bucket(self):
         async with self._client() as s3:
             try:
                 await s3.head_bucket(Bucket=self.bucket)
             except ClientError as e:
-                if e.response["Error"]["Code"] in ("404", "NoSuchBucket"):
+                error_code = e.response["Error"]["Code"]
+                if error_code in ("404", "NoSuchBucket"):
                     await s3.create_bucket(Bucket=self.bucket)
+                else:
+                    raise
 
     async def upload_file(self, data:bytes, key:str, content_type:str="application/octet-stream")->str:
         async with self._client() as s3:
