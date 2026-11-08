@@ -89,7 +89,7 @@ cd "$APP_DIR"
 if [[ -f ".env" ]]; then 
     warn "Найден готовый .env в текущей папке - использую его."
     cp .env "$APP_DIR/.env"
-elif [[-f "$APP_DIR/.env"]]; then 
+elif [[ -f "$APP_DIR/.env" ]]; then 
     warn ".env уже существует в $APP_DIR - не трогаю."
 else 
     log "Создание .env из шаблона и генерация паролей..."
