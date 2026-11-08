@@ -24,7 +24,7 @@ cleanup() {
         warn "Установка прервана (код $exit_code)."
         if [[ -d "$APP_DIR" ]]; then
             warn "Удаляю $APP_DIR..."
-            rm -rf "$APP_DIR"
+            sudo rm -rf "$APP_DIR"
         fi
         # Остановка и удаление контейнеров проекта, если они были созданы
         if [[ -f "$APP_DIR/docker-compose.yml" ]]; then
