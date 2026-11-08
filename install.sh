@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+## Подготовка|Настройки к запуску install.sh
 # ==================== Настройки ====================
 APP_DIR="${APP_DIR:-$HOME/cloud-storage}"
-REPO_URL="${REPO_URL:-https://github.com/MityaiS/cloud.git}"
+REPO_URL="https://github.com/MityaiS/cloud.git"
 SSH_PORT="${SSH_PORT:-2222}"
 
-# ==================== Цвета ====================
+# ==================== Функции цвета ====================
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -16,7 +17,7 @@ log()   { echo -e "${GREEN}[+]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[!]${NC} $*"; }
 error() { echo -e "${RED}[x]${NC} $*" >&2; exit 1; }
 
-# ==================== Очистка при ошибке ====================
+# ==================== Функция очистки при ошибке ====================
 cleanup() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
@@ -25,7 +26,7 @@ cleanup() {
             warn "Удаляю $APP_DIR..."
             rm -rf "$APP_DIR"
         fi
-        # Останавливаем и удаляем контейнеры проекта, если они были созданы
+        # Остановка и удаление контейнеров проекта, если они были созданы
         if [[ -f "$APP_DIR/docker-compose.yml" ]]; then
             cd "$APP_DIR" && sudo docker compose down -v 2>/dev/null || true
         fi
@@ -37,15 +38,15 @@ trap cleanup EXIT
 [[ $EUID -ne 0 ]] || error "Не запускай от root. Используй обычного пользователя с sudo."
 command -v apt >/dev/null || error "Скрипт для Ubuntu/Debian (apt)."
 
+
+#### Начало работы install.sh
 # ==================== 1. Обновление системы ====================
-log "Обновление пакетов"
+log "Обновление системных пакетов"
 sudo apt update && sudo apt upgrade -y
 
 # ==================== 2. Базовые пакеты ====================
-log "Установка утилит"
-sudo apt install -y \
-    curl wget git htop ncdu rsync net-tools \
-    ufw ca-certificates gnupg lsb-release
+log "Установка базовых утилит"
+sudo apt install -y curl git ufw
 
 # ==================== 3. Docker ====================
 if ! command -v docker >/dev/null; then
@@ -74,23 +75,7 @@ sudo ufw allow 443/tcp comment 'HTTPS'
 sudo ufw --force enable
 sudo ufw status verbose
 
-# ==================== 6. Сеть и DNS ====================
-log "Проверка сетевого доступа"
-if ! ping -c 3 8.8.8.8 >/dev/null 2>&1; then
-    error "Нет сетевого соединения. Проверьте настройки сети."
-fi
-
-log "Настройка DNS для Docker (8.8.8.8, 1.1.1.1)"
-sudo mkdir -p /etc/docker
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{
-  "dns": ["8.8.8.8", "1.1.1.1"]
-}
-EOF
-sudo systemctl restart docker || error "Не удалось перезапустить Docker"
-sleep 3
-
-# ==================== 7. Клонирование ====================
+# ==================== 6. Клонирование ====================
 if [[ -d "$APP_DIR" ]]; then
     warn "Папка $APP_DIR уже существует — пропускаю клон"
 else
@@ -100,7 +85,7 @@ fi
 
 cd "$APP_DIR"
 
-# ==================== 8. .env ====================
+# ==================== 7. .env ====================
 if [[ ! -f .env ]]; then
     log "Создание .env из шаблона"
     cp .env.example .env
@@ -116,7 +101,7 @@ else
     warn ".env уже существует — не трогаю"
 fi
 
-# ==================== 9. Запуск ====================
+# ==================== 8. Запуск ====================
 log "Сборка и запуск контейнеров"
 
 success=false
@@ -148,9 +133,9 @@ fi
 log "Ожидание готовности (15 секунд)"
 sleep 15
 sudo docker compose ps
-sudo docker compose logs --tail 20 backend
+sudo docker compose logs --tail 50 backend
 
-# ==================== 10. Итог ====================
+# ==================== 9. Итоговый вывод ====================
 IP=$(hostname -I | awk '{print $1}')
 echo
 log "Готово."
