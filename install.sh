@@ -160,6 +160,9 @@ sudo docker compose logs --tail 6 db
 echo ""
 log "Логи контейнера [minio]:"
 sudo docker compose logs --tail 6 minio
+echo ""
+log "Логи контейнера [nginx]:"
+sudo docker compose logs --tail 15 nginx
 
 # ==================== 9. Итоговый вывод ====================
 IP=$(hostname -I | awk '{print $1}')
