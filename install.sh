@@ -166,7 +166,8 @@ IP=$(hostname -I | awk '{print $1}')
 echo
 log "Готово."
 echo
-echo "  Swagger:  http://$IP:8000/docs"
-echo "  MinIO:    http://$IP:9001"
+echo "  Главная:  http://$IP"
+echo "  Swagger:  http://$IP/docs"
+echo "  MinIO (локально): http://localhost:9001" 
 echo
 warn "Если Docker установлен впервые — перелогинься, чтобы применилась группа docker."
