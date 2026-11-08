@@ -58,8 +58,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 > **[WARNING]**  
 > **Перед запуском в production** обязательно создайте собственный .env со своими значениями рядом с install.sh, он автоматически копирует его в проект. 
 ```
-cp -r /mnt/c/директория_куда_скачали/install.sh ~/
-cd ~
+curl -sSL -O https://raw.githubusercontent.com/MityaiS/cloud/main/install.sh
+chmod +x install.sh
 ./install.sh
 ```
 <!-- ##### **install.sh**: -->
