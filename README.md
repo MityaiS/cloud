@@ -21,6 +21,7 @@
 - **Backend:** Python 3.13, FastAPI, SQLAlchemy 2.0 (async)
 - **База данных:** PostgreSQL 15
 - **Хранилище:** MinIO (S3)
+- **Reverse proxy:** Nginx
 - **Аутентификация:** JWT, bcrypt
 - **Инфраструктура:** Docker, Docker Compose
 
@@ -68,7 +69,7 @@ chmod +x install.sh
 > [+] *Устанавливает (при отсутствии): docker, docker-compose*  
 > [+] *Открывает порты: 2222(ssh), 80(http), 443(https)*  
 > [+] *Клонирует репозиторий*  
-> [+] *Запускает контейнеры: db, minio, backend*
+> [+] *Запускает контейнеры: db, minio, backend, nginx*
 
 #### Проверка работы
 ```
@@ -116,5 +117,6 @@ docker compose exec db psql -U postgres -d cloud_pj
 ✅ JWT-аутентификация  
 ✅ Загрузка в MinIO  
 ✅ Квоты  
+✅ Reverse proxy (Nginx)  
 ❌ Тесты  
 ❌ Alembic-миграции  
