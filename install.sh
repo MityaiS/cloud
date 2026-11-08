@@ -126,19 +126,40 @@ fi
 
 # Проверка, что все контейнеры Up (не Restarting / не Exited)
 log "Проверка статуса контейнеров..."
-sleep 10
-if ! sudo docker compose ps | grep -q "Up"; then
-    error "Контейнеры не запустились корректно."
-fi
 
-if sudo docker compose ps | grep -qE "Restarting|Exited"; then
+# Ждём до 30 секунд, пока все контейнеры не станут стабильными
+for i in {1..15}; do
+    if sudo docker compose ps | grep -qE "Restarting|Exited|unhealthy"; then
+        sleep 2
+    else
+        break
+    fi
+done
+
+# Финальная проверка
+if sudo docker compose ps | grep -qE "Restarting|Exited|unhealthy"; then
     error "Один или несколько контейнеров в состоянии ошибки."
 fi
 
-log "Ожидание готовности (15 секунд)"
-sleep 15
+# Проверяем, что бэкенд действительно Up
+if ! sudo docker compose ps | grep -q "cloud-storage-backend-1"; then
+    error "Контейнер бэкенда не найден."
+fi
+
+log "Ожидание готовности (10 секунд)"
+sleep 10
+echo ""
+log "Информация о контейнерах:"
 sudo docker compose ps
-sudo docker compose logs --tail 50 backend
+echo ""
+log "Логи контейнера [backend]:"
+sudo docker compose logs --tail 6 backend
+echo ""
+log "Логи контейнера [db]:"
+sudo docker compose logs --tail 6 db
+echo ""
+log "Логи контейнера [minio]:"
+sudo docker compose logs --tail 6 minio
 
 # ==================== 9. Итоговый вывод ====================
 IP=$(hostname -I | awk '{print $1}')
