@@ -86,7 +86,7 @@ fi
 cd "$APP_DIR"
 
 # ==================== 7. .env ====================
-if [[-f ".env"]]; then 
+if [[ -f ".env" ]]; then 
     warn "Найден готовый .env в текущей папке - использую его."
     cp .env "$APP_DIR/.env"
 elif [[-f "$APP_DIR/.env"]]; then 
