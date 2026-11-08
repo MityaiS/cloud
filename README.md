@@ -77,12 +77,10 @@ docker compose ps
 docker compose logs --tail 50 
 ```
 
-#### Адреса панелей
-```
-<IP-сервера>:8000 (uvicorn) 
-<IP-сервера>:8000/docs (Swagger UI)
-<IP-сервера>:9001 (Console Object Storage MinIO)
-```
+### Адреса панелей
+- `<IP-сервера>` — основной адрес (через Nginx)
+- `<IP-сервера>/docs` — Swagger UI
+- `http://localhost:9001` — MinIO Console *(доступна только с самого сервера)*
 
 #### Работа с db из терминала
 ```
