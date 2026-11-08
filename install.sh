@@ -86,20 +86,25 @@ fi
 cd "$APP_DIR"
 
 # ==================== 7. .env ====================
-if [[ ! -f .env ]]; then
-    log "Создание .env из шаблона"
-    cp .env.example .env
+if [[-f ".env"]]; then 
+    warn "Найден готовый .env в текущей папке - использую его."
+    cp .env "$APP_DIR/.env"
+elif [[-f "$APP_DIR/.env"]]; then 
+    warn ".env уже существует в $APP_DIR - не трогаю."
+else 
+    log "Создание .env из шаблона и генерация паролей..."
+    cp "$APP_DIR/.env.example" "$APP_DIR/.env"
 
+    #Генерация
     SECRET_KEY=$(openssl rand -hex 32)
     DB_PASS=$(openssl rand -hex 16)
 
-    sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$SECRET_KEY|" .env
-    sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=$DB_PASS|" .env
+    #Подстановка
+    sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$SECRET_KEY|" "$APP_DIR/.env"
+    sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=$DB_PASS|" "$APP_DIR/.env"
 
-    warn "Сгенерированы случайные пароли. Проверь .env перед запуском."
-else
-    warn ".env уже существует — не трогаю"
-fi
+    warn "Сгенерированы случайные пароли."
+fi 
 
 # ==================== 8. Запуск ====================
 log "Сборка и запуск контейнеров"
